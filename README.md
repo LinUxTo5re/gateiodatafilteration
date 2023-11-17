@@ -1,2 +1,19 @@
-# gateiodatafilteration
-uses gate io API's for spot/margin/futures trading. done data filtration based on volume of crypto, sum, historical candlesticks data etc
+# Gate.io Crypto Filtration Project
+This project utilizes Gate.io APIs to collect and analyze data from:
+- spot
+-  margin
+-  futures markets.
+
+## Overview
+The project performs data analysis tasks such as:
+
+Gathering data from Gate.io APIs for spot, margin, and futures markets.
+
+Identifying common cryptocurrencies across these markets.
+
+Filtering high volume markets to focus on significant trading activities.
+
+## Requirements:
+- Requests (for API interaction)
+- Pandas (for data manipulation and analysis)
+- Gate IO API's
