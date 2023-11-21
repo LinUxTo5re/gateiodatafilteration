@@ -29,48 +29,80 @@ def common_markets_filtering(spot_usdt_tradable_markets, future_ticker_list):
     print(f'total future_ticker_list after removal: {len(future_ticker_list)}')
     return future_ticker_list
 
+
 def features_selection(future_ticker_list):
     df = pd.DataFrame(future_ticker_list)
-    selected_columns = ['contract','mark_price', 'volume_24h_quote']
+    selected_columns = ['contract', 'mark_price', 'volume_24h_quote']
     selected_df = df[selected_columns]
 
     for column in selected_df.columns:
         try:
             selected_df[column] = selected_df[column].astype(float)
         except ValueError:
-            pass 
+            pass
 
+#removed crypto which price is more than $20
     selected_df = selected_df[selected_df['mark_price'] < 20].sort_values(by='volume_24h_quote')
+    print(f"total makets (removed future markets- Price > $20): {len(selected_df)}")
+#removed crypto which 24 hrs volume is less than 100k
 
-    selected_df = selected_df[selected_df['volume_24h_quote'] > 100000].sort_values(by='volume_24h_quote',ascending=False)
+    selected_df = selected_df[selected_df['volume_24h_quote'] > 100000].sort_values(by='volume_24h_quote',
+                                                                                    ascending=False)
+    print(f'total markets (removed future markets- volume < 100k): {len(selected_df)}')
     selected_df = selected_df.reset_index()
 
-    selected_df  = selected_df.drop('index', axis=1)
+    selected_df = selected_df.drop('index', axis=1)
     return selected_df
 
 
 "In this fun, will exclude assets with low volume and less percentage change"
-def candlestick_data_handle(contract):
-    query_param = {'contract':f'{contract}','interval':'1d',
-               "from": int((datetime.now() - timedelta(days=7)).timestamp()), 
-               "to": int(datetime.now().timestamp())}
-    
-    future_candlestick_data = requests.request('GET', host + prefix + future_candlestick_url, params = query_param, headers=headers).json()
+
+
+def candlestick_data_handle7d(contract):
+    query_param = {'contract': f'{contract}', 'interval': '1d',
+                   "from": int((datetime.now() - timedelta(days=7)).timestamp()),
+                   "to": int(datetime.now().timestamp())}
+
+    future_candlestick_data = requests.request('GET', host + prefix + future_candlestick_url, params=query_param,
+                                               headers=headers).json()
     future_candlestick_data = pd.DataFrame(future_candlestick_data)
-    future_candlestick_data  = future_candlestick_data.drop(['t','o','l','h'], axis=1)
+    future_candlestick_data = future_candlestick_data.drop(['c', 'o', 'l', 'h'], axis=1)
 
     for column in future_candlestick_data.columns:
         try:
             future_candlestick_data[column] = future_candlestick_data[column].astype(float)
         except ValueError:
-            pass  
+            pass
 
-    future_candlestick_data['pct_change'] = future_candlestick_data['c'].diff() / future_candlestick_data['c'].shift(1) * 100
+    future_candlestick_data['pct_change'] = future_candlestick_data['c'].diff() / future_candlestick_data['c'].shift(
+        1) * 100
 
-    #100000 is equal to 1.00e+05 (scientific notation)
-    return True if (future_candlestick_data['sum'] < 100000).any() or (future_candlestick_data['v'] < 100000).any() else False
-    # if can_delete :
-    #     selected_df = selected_df[selected_df['contract'] != contract]
-    #     return False
-    # else:
-    #     return True
+    # 100000 is equal to 1.00e+05 (scientific notation)
+    return True if (future_candlestick_data['sum'] < 100000).any() or (
+                future_candlestick_data['v'] < 100000).any() else False
+    
+"""
+In this fun, will exclude assets which may have high/low ask/bid price difference
+ or no order executed 
+ or less order executed than idel number of orders executed for this asset.
+ for example: atleast 5K orders should be executed in that 1 mins.
+ """
+
+
+def candlestick_data_handle1min(contract):
+    query_param = {'contract': f'{contract}', 'interval': '1m',
+                   "from": int((datetime.now() - timedelta(minutes=5)).timestamp()),
+                   "to": int(datetime.now().timestamp())}
+
+    future_candlestick_data = requests.request('GET', host + prefix + future_candlestick_url, params=query_param,
+                                               headers=headers).json()
+    future_candlestick_data = pd.DataFrame(future_candlestick_data)
+    future_candlestick_data = future_candlestick_data.drop(['t', 'o', 'l', 'h'], axis=1)
+    #remove assets whose volume/sum is zero or less than 100 usdt for 1min tf of  5mins data
+    for column in future_candlestick_data.columns:
+        try:
+            future_candlestick_data[column] = future_candlestick_data[column].astype(float)
+        except ValueError:
+            pass
+
+    return future_candlestick_data

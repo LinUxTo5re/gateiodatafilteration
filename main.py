@@ -4,13 +4,12 @@ import filter_future_market
 import filter_spot_market
 from datetime import datetime
 
-
-#entry pt of my code
+# entry pt of my code
 if __name__ == '__main__':
-    #list of available spot markets on gate io 
+    # list of available spot markets on gate io
     spot_markets_list = spot_market.spot_markets_list()
 
-    #list of avaialbe future markets on gate io
+    # list of available future markets on gate io
     future_ticker_list = future_market.future_ticker_list()
 
     '''
@@ -23,7 +22,8 @@ if __name__ == '__main__':
     function will return list of common markets from spot and future.
     it'll also remove unwanted markets which are not same.    
     '''
-    common_future_spot_markets = filter_future_market.common_markets_filtering(spot_usdt_tradable_markets, future_ticker_list)
+    common_future_spot_markets = filter_future_market.common_markets_filtering(spot_usdt_tradable_markets,
+                                                                               future_ticker_list)
 
     '''
     function will handle dtypes of dataframe, reindxing of indexes
@@ -38,14 +38,14 @@ if __name__ == '__main__':
     for i in selected_df['contract']:
         if filter_future_market.candlestick_data_handle(i):
             selected_df = selected_df[selected_df['contract'] != i]
-            print(f"deleted: {i}, remaining assets: {len(selected_df)}") 
+            print(f"deleted: {i}, remaining assets: {len(selected_df)}")
         else:
             print(f"added: {i}")
 
     print(f'total asset of dataframe (after): {len(selected_df)}')
 
-    #saving final output of dataframe to excel file for reference
+    # saving final output of dataframe to Excel file for reference
     selected_df.to_excel(f'final_spot_futures_markets_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.xlsx', index=False)
 
-#Check volatility and filter more coins
-#enjoy margin's api and make this product more suitable for your trading. -- to do later, not now
+# Check volatility and filter more coins
+# enjoy margin's api and make this product more suitable for your trading. -- to do later, not now

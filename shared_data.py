@@ -1,8 +1,8 @@
-#shared data
+# shared data
 host = "https://api.gateio.ws"
 prefix = "/api/v4"
 headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
-settle = 'usdt' #btc
+settle = 'usdt'  # btc
 spot_ticker_info_url = '/spot/tickers'
 spot_currency_pairs_url = '/spot/currency_pairs'
 all_future_contracts_url = f'/futures/{settle}/contracts'
