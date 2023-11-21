@@ -48,4 +48,4 @@ if __name__ == '__main__':
     selected_df.to_excel(f'final_spot_futures_markets_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.xlsx', index=False)
 
 #Check volatility and filter more coins
-#enjoy margin's api and make this product more suitable for your trading.
+#enjoy margin's api and make this product more suitable for your trading. -- to do later, not now
