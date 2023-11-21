@@ -1,0 +1,6 @@
+1- some coins have a less number of trades, so just get a 1min tf for those coins and filter those coins 
+from selected dataframe.
+
+2- filter coins using ma/rsi indicators using their long term picture
+
+3- filter coins by change percentage wrt their price
