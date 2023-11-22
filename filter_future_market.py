@@ -78,7 +78,7 @@ def candlestick_data_handle7d(contract):
     #     1) * 100
 
     # 100000 is equal to 1.00e+05 (scientific notation)
-    return (future_candlestick_data7d['sum'] < 100000).any() or (future_candlestick_data7d['v'] < 100000).any()
+    return (future_candlestick_data7d['sum'] < 100000).any()
 
     
 """
@@ -96,6 +96,7 @@ def candlestick_data_handle1min(contract):
 
     future_candlestick_data1m = requests.request('GET', host + prefix + future_candlestick_url, params=query_param,
                                                headers=headers).json()
+    future_candlestick_data1m.pop()
     future_candlestick_data1m = pd.DataFrame(future_candlestick_data1m)
     future_candlestick_data1m = future_candlestick_data1m.drop(['t', 'o', 'l', 'h','c'], axis=1)
     #remove assets whose volume/sum is zero or less than 100 usdt for 1min tf of  5mins data
@@ -104,9 +105,11 @@ def candlestick_data_handle1min(contract):
             future_candlestick_data1m[column] = future_candlestick_data1m[column].astype(float)
         except ValueError:
             pass
-    return (future_candlestick_data1m['sum'] < 500).any() or (future_candlestick_data1m['v'] < 500).any()
+    print(future_candlestick_data1m)
+    #sum - trading volume for that tf
+    return (future_candlestick_data1m['sum'] < 500).any() 
 
 
 if __name__ == '__main__':
     print('working')
-    print(candlestick_data_handle7d('C98_USDT'))
+    print(candlestick_data_handle1min('KAS_USDT'))

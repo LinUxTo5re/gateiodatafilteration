@@ -49,7 +49,7 @@ if __name__ == '__main__':
     '''
     print(f'total asset of dataframe-1m (before): {len(selected_df)}')
     for i in selected_df['contract']:
-        if filter_future_market.candlestick_data_handle1m(i):
+        if filter_future_market.candlestick_data_handle1min(i):
             selected_df = selected_df[selected_df['contract'] != i]
             print(f"deleted: {i}, remaining assets: {len(selected_df)}")
         else:
