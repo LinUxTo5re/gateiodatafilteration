@@ -78,8 +78,8 @@ def candlestick_data_handle7d(contract):
     #     1) * 100
 
     # 100000 is equal to 1.00e+05 (scientific notation)
-    return True if (future_candlestick_data7d['sum'] < 100000).any() or (
-                future_candlestick_data7d['v'] < 100000).any() else False
+    return (future_candlestick_data7d['sum'] < 100000).any() or (future_candlestick_data7d['v'] < 100000).any()
+
     
 """
 In this fun, will exclude assets which may have high/low ask/bid price difference
@@ -104,10 +104,9 @@ def candlestick_data_handle1min(contract):
             future_candlestick_data1m[column] = future_candlestick_data1m[column].astype(float)
         except ValueError:
             pass
+    return (future_candlestick_data1m['sum'] < 500).any() or (future_candlestick_data1m['v'] < 500).any()
 
-    return  return True if (future_candlestick_data1m['sum'] < 500).any() or (
-                future_candlestick_data1m['v'] < 500).any() else False
 
-# if __name__ == '__main__':
-#     print('working')
-#     print(candlestick_data_handle1min('C98_USDT'))
+if __name__ == '__main__':
+    print('working')
+    print(candlestick_data_handle7d('C98_USDT'))
