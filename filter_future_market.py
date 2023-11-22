@@ -41,10 +41,10 @@ def features_selection(future_ticker_list):
         except ValueError:
             pass
 
-#removed crypto which price is more than $20
+    # removed crypto which price is more than $20
     selected_df = selected_df[selected_df['mark_price'] < 20].sort_values(by='volume_24h_quote')
     print(f"total makets (removed future markets- Price > $20): {len(selected_df)}")
-#removed crypto which 24 hrs volume is less than 100k
+    # removed crypto which 24 hrs volume is less than 100k
 
     selected_df = selected_df[selected_df['volume_24h_quote'] > 100000].sort_values(by='volume_24h_quote',
                                                                                     ascending=False)
@@ -64,9 +64,9 @@ def candlestick_data_handle7d(contract):
                    "to": int(datetime.now().timestamp())}
 
     future_candlestick_data7d = requests.request('GET', host + prefix + future_candlestick_url, params=query_param,
-                                               headers=headers).json()
+                                                 headers=headers).json()
     future_candlestick_data7d = pd.DataFrame(future_candlestick_data7d)
-    future_candlestick_data7d = future_candlestick_data7d.drop(['c', 'o', 'l', 'h','t'], axis=1)
+    future_candlestick_data7d = future_candlestick_data7d.drop(['c', 'o', 'l', 'h', 't'], axis=1)
 
     for column in future_candlestick_data7d.columns:
         try:
@@ -74,13 +74,13 @@ def candlestick_data_handle7d(contract):
         except ValueError:
             pass
 
-    # future_candlestick_data7d['pct_change'] = future_candlestick_data7d['c'].diff() / future_candlestick_data7d['c'].shift(
-    #     1) * 100
+    # future_candlestick_data7d['pct_change'] = future_candlestick_data7d['c'].diff() / future_candlestick_data7d[
+    # 'c'].shift( 1) * 100
 
     # 100000 is equal to 1.00e+05 (scientific notation)
     return (future_candlestick_data7d['sum'] < 100000).any()
 
-    
+
 """
 In this fun, will exclude assets which may have high/low ask/bid price difference
  or no order executed 
@@ -95,19 +95,19 @@ def candlestick_data_handle1min(contract):
                    "to": int((datetime.now() - timedelta(minutes=1)).timestamp())}
 
     future_candlestick_data1m = requests.request('GET', host + prefix + future_candlestick_url, params=query_param,
-                                               headers=headers).json()
+                                                 headers=headers).json()
     future_candlestick_data1m.pop()
     future_candlestick_data1m = pd.DataFrame(future_candlestick_data1m)
-    future_candlestick_data1m = future_candlestick_data1m.drop(['t', 'o', 'l', 'h','c'], axis=1)
-    #remove assets whose volume/sum is zero or less than 100 usdt for 1min tf of  5mins data
+    future_candlestick_data1m = future_candlestick_data1m.drop(['t', 'o', 'l', 'h', 'c'], axis=1)
+    # remove assets whose volume/sum is zero or less than 100 usdt for 1min tf of  5mins data
     for column in future_candlestick_data1m.columns:
         try:
             future_candlestick_data1m[column] = future_candlestick_data1m[column].astype(float)
         except ValueError:
             pass
     print(future_candlestick_data1m)
-    #sum - trading volume for that tf
-    return (future_candlestick_data1m['sum'] < 500).any() 
+    # sum - trading volume for that tf
+    return (future_candlestick_data1m['sum'] < 500).any()
 
 
 if __name__ == '__main__':

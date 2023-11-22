@@ -3,6 +3,8 @@ import future_market
 import filter_future_market
 import filter_spot_market
 from datetime import datetime
+import os
+import glob
 
 # entry pt of my code
 if __name__ == '__main__':
@@ -57,7 +59,11 @@ if __name__ == '__main__':
 
     print(f'total asset of dataframe-1m (after): {len(selected_df)}')
 
-    # saving final output of dataframe to Excel file for reference
+    # Check if there are any XLS files, then delete them
+    # if glob.glob(os.path.join(os.getcwd(), '*.xls')):
+    #     for file in glob.glob(os.path.join(os.getcwd(), '*.xls')):
+    #         os.remove(file)
+    # Save the new XLSX file
     selected_df.to_excel(f'final_spot_futures_markets_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.xlsx', index=False)
 
 # Check volatility and filter more coins
