@@ -32,17 +32,30 @@ if __name__ == '__main__':
     selected_df = filter_future_market.features_selection(common_future_spot_markets)
 
     '''
-    here we're performing deep filtering using contracts candlesticks data
+    here we're performing deep filtering using contracts candlesticks data for 7d
     '''
-    print(f'total asset of dataframe (before): {len(selected_df)}')
+    print(f'total asset of dataframe-7d (before): {len(selected_df)}')
     for i in selected_df['contract']:
-        if filter_future_market.candlestick_data_handle(i):
+        if filter_future_market.candlestick_data_handle7d(i):
             selected_df = selected_df[selected_df['contract'] != i]
             print(f"deleted: {i}, remaining assets: {len(selected_df)}")
         else:
             print(f"added: {i}")
 
-    print(f'total asset of dataframe (after): {len(selected_df)}')
+    print(f'total asset of dataframe-7d (after): {len(selected_df)}')
+
+    '''
+    here we're performing deep filtering using contracts candlesticks data of 1 minutes
+    '''
+    print(f'total asset of dataframe-1m (before): {len(selected_df)}')
+    for i in selected_df['contract']:
+        if filter_future_market.candlestick_data_handle1m(i):
+            selected_df = selected_df[selected_df['contract'] != i]
+            print(f"deleted: {i}, remaining assets: {len(selected_df)}")
+        else:
+            print(f"added: {i}")
+
+    print(f'total asset of dataframe-1m (after): {len(selected_df)}')
 
     # saving final output of dataframe to Excel file for reference
     selected_df.to_excel(f'final_spot_futures_markets_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.xlsx', index=False)
