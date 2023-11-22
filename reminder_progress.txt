@@ -1,8 +1,11 @@
 1- some coins have a less numb of trades, so just get a 1min tf for those coins and filter those coins
-from selected dataframe.
+from selected dataframe.--completed
 
 2- filter coins using ma/rsi indicators using their long term picture
 
-3- filter coins by change percentage wrt their price
+3- filter coins by change percentage wrt their price --no need
+
 
 # enjoy margin's api and make this product more suitable for your trading. -- to do later, not now
+
+#check coins of 7d tf randomly to make sure that 1m tf is working as expected.
