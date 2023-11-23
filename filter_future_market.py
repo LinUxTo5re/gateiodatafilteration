@@ -1,8 +1,4 @@
-import requests
 import pandas as pd
-from shared_data import *
-from future_market import *
-from filter_spot_market import *
 from spot_market import *
 from datetime import datetime, timedelta
 
@@ -41,8 +37,8 @@ def features_selection(future_ticker_list):
         except ValueError:
             pass
 
-    # removed crypto which price is more than $20
-    selected_df = selected_df[selected_df['mark_price'] < 20].sort_values(by='volume_24h_quote')
+    # removed crypto which price is more than $15
+    selected_df = selected_df[selected_df['mark_price'] < 15].sort_values(by='volume_24h_quote')
     print(f"total makets (removed future markets- Price > $20): {len(selected_df)}")
     # removed crypto which 24 hrs volume is less than 100k
 
@@ -89,27 +85,29 @@ In this fun, will exclude assets which may have high/low ask/bid price differenc
  """
 
 
-def candlestick_data_handle1min(contract):
-    query_param = {'contract': f'{contract}', 'interval': '1m',
-                   "from": int((datetime.now() - timedelta(minutes=5)).timestamp()),
+def candlestick_data_handleofmin(contract, interval, start_min):
+    query_param = {'contract': f'{contract}', 'interval': interval,
+                   "from": int((datetime.now() - timedelta(minutes=start_min)).timestamp()),
                    "to": int((datetime.now() - timedelta(minutes=1)).timestamp())}
 
-    future_candlestick_data1m = requests.request('GET', host + prefix + future_candlestick_url, params=query_param,
+    future_candlestick_data_of_m = requests.request('GET', host + prefix + future_candlestick_url, params=query_param,
                                                  headers=headers).json()
-    future_candlestick_data1m.pop()
-    future_candlestick_data1m = pd.DataFrame(future_candlestick_data1m)
-    future_candlestick_data1m = future_candlestick_data1m.drop(['t', 'o', 'l', 'h', 'c'], axis=1)
-    # remove assets whose volume/sum is zero or less than 100 usdt for 1min tf of  5mins data
-    for column in future_candlestick_data1m.columns:
+    future_candlestick_data_of_m.pop()
+    future_candlestick_data_of_m = pd.DataFrame(future_candlestick_data_of_m)
+    future_candlestick_data_of_m = future_candlestick_data_of_m.drop(['t', 'o', 'l', 'h', 'c'], axis=1)
+    # remove assets whose volume/sum is zero or less than 100 usdt for 1min/5min tf of  5mins/25mins data
+    for column in future_candlestick_data_of_m.columns:
         try:
-            future_candlestick_data1m[column] = future_candlestick_data1m[column].astype(float)
+            future_candlestick_data_of_m[column] = future_candlestick_data_of_m[column].astype(float)
         except ValueError:
             pass
-    print(future_candlestick_data1m)
     # sum - trading volume for that tf
-    return (future_candlestick_data1m['sum'] < 500).any()
+    if interval == '5m':
+        return (future_candlestick_data_of_m['sum'] < 1500).any()
+    else:
+        return (future_candlestick_data_of_m['sum'] < 200).any()
 
 
-if __name__ == '__main__':
-    print('working')
-    print(candlestick_data_handle1min('KAS_USDT'))
+# if __name__ == '__main__':
+#     print('working')
+#     print(candlestick_data_handleofmin('UNI_USDT'))
