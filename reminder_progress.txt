@@ -1,10 +1,12 @@
 #add weightage to coins using ma/rsi indicators using their long term picture
+added using price percentage change
 
 ----------completed---------------------
 #some coins have a less numb of trades, so just get a 1min tf for those coins and filter those coins
 from selected dataframe.
 
 #check coins of 7d tf randomly to make sure that 1m tf is working as expected.
+
 -----------------to do later-----------------------------
 # enjoy margin's api and make this product more suitable for your trading.
 

@@ -37,14 +37,14 @@ def features_selection(future_ticker_list):
         except ValueError:
             pass
 
-    # removed crypto which price is more than $15
-    selected_df = selected_df[selected_df['mark_price'] < 15].sort_values(by='volume_24h_quote')
-    print(f"total makets (removed future markets- Price > $20): {len(selected_df)}")
-    # removed crypto which 24 hrs volume is less than 100k
+    # removed crypto which price is more than $5
+    selected_df = selected_df[selected_df['mark_price'] < 5].sort_values(by='volume_24h_quote')
+    print(f"total makets (removed future markets- Price > $5): {len(selected_df)}")
+    # removed crypto which 24 hrs volume is less than 300k
 
-    selected_df = selected_df[selected_df['volume_24h_quote'] > 100000].sort_values(by='volume_24h_quote',
+    selected_df = selected_df[selected_df['volume_24h_quote'] > 350000].sort_values(by='volume_24h_quote',
                                                                                     ascending=False)
-    print(f'total markets (removed future markets- volume < 100k): {len(selected_df)}')
+    print(f'total markets (removed future markets- volume < 350k): {len(selected_df)}')
     selected_df = selected_df.reset_index()
 
     selected_df = selected_df.drop('index', axis=1)
@@ -70,17 +70,14 @@ def candlestick_data_handle7d(contract):
         except ValueError:
             pass
 
-    # future_candlestick_data7d['pct_change'] = future_candlestick_data7d['c'].diff() / future_candlestick_data7d[
-    # 'c'].shift( 1) * 100
-
     # 100000 is equal to 1.00e+05 (scientific notation)
-    return (future_candlestick_data7d['sum'] < 100000).any()
+    return (future_candlestick_data7d['sum'] < 350000).any()
 
 
 """
 In this fun, will exclude assets which may have high/low ask/bid price difference
  or no order executed 
- or less order executed than idel number of orders executed for this asset.
+ or less order executed than ideal number of orders executed for this asset.
  for example: atleast 5K orders should be executed in that 1 mins.
  """
 
@@ -91,11 +88,11 @@ def candlestick_data_handleofmin(contract, interval, start_min):
                    "to": int((datetime.now() - timedelta(minutes=1)).timestamp())}
 
     future_candlestick_data_of_m = requests.request('GET', host + prefix + future_candlestick_url, params=query_param,
-                                                 headers=headers).json()
+                                                    headers=headers).json()
     future_candlestick_data_of_m.pop()
     future_candlestick_data_of_m = pd.DataFrame(future_candlestick_data_of_m)
     future_candlestick_data_of_m = future_candlestick_data_of_m.drop(['t', 'o', 'l', 'h', 'c'], axis=1)
-    # remove assets whose volume/sum is zero or less than 100 usdt for 1min/5min tf of  5mins/25mins data
+    # remove assets whose volume/sum is zero or less than 100 usdt for 3min/5min tf of  5mins/25mins data
     for column in future_candlestick_data_of_m.columns:
         try:
             future_candlestick_data_of_m[column] = future_candlestick_data_of_m[column].astype(float)
@@ -103,11 +100,11 @@ def candlestick_data_handleofmin(contract, interval, start_min):
             pass
     # sum - trading volume for that tf
     if interval == '5m':
-        return (future_candlestick_data_of_m['sum'] < 1500).any()
+        return (future_candlestick_data_of_m['sum'] < 2500).any()
     else:
-        return (future_candlestick_data_of_m['sum'] < 200).any()
+        return (future_candlestick_data_of_m['sum'] < 1000).any()
 
 
 # if __name__ == '__main__':
 #     print('working')
-#     print(candlestick_data_handleofmin('UNI_USDT'))
+#     print(candlestick_data_handleofmin('BAIDOGE_USDT', '1m', 6))
