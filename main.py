@@ -6,7 +6,7 @@ from datetime import datetime
 import os
 import glob
 import filter_dataframe
-
+import pytz
 # entry pt of my code
 if __name__ == '__main__':
     # list of available spot markets on gate io
@@ -37,23 +37,15 @@ if __name__ == '__main__':
     '''
     here we're performing deep filtering using contracts candlesticks data for 7d
     '''
-    print(f'total asset of dataframe-candlesticks (before): {len(selected_df)}')
     for i in selected_df['contract']:
         if filter_future_market.candlestick_data_handle7d(i):
             selected_df = selected_df[selected_df['contract'] != i]
-            print(f"deleted: {i}, remaining assets (7d): {len(selected_df)}")
         else:
             if filter_future_market.candlestick_data_handleofmin(i, '5m', 25):
                 selected_df = selected_df[selected_df['contract'] != i]
-                print(f"deleted: {i}, remaining assets (5min): {len(selected_df)}")
             else:
                 if filter_future_market.candlestick_data_handleofmin(i, '3m', 6):
                     selected_df = selected_df[selected_df['contract'] != i]
-                    print(f"deleted: {i}, remaining assets (3min): {len(selected_df)}")
-                else:
-                    print(f"added: {i}")  # finally added
-
-    print(f'total asset of dataframe-candlesticks (after): {len(selected_df)}')
 
     # Check if there are any XLS files, then delete them
     if glob.glob(os.path.join(os.getcwd(), '*.xlsx')):
@@ -64,14 +56,14 @@ if __name__ == '__main__':
     selected_df = selected_df[selected_df['volume_24h_quote'] > 500000].sort_values(by='volume_24h_quote',
                                                                                     ascending=False)
     try:
-        print(f'total crypto before price change(): ', len(selected_df))
         for crypto in selected_df['contract']:
             if not filter_dataframe.filter_coins(crypto):
                 selected_df = selected_df[selected_df['contract'] != crypto]
 
         selected_df = selected_df.sort_values(by='volume_24h_quote', ascending=False)
-        print(f'total crypto after price change(): ', len(selected_df))
     except Exception as e:
         pass
+    ist_timezone = pytz.timezone('Asia/Kolkata')
+    ist_now = datetime.now(ist_timezone)
     # Saving XLSX file
-    selected_df.to_excel(f'final_spot_futures_markets_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.xlsx', index=False)
+    selected_df.to_excel(f'final_spot_futures_markets_{ist_now.strftime("%Y-%m-%d_%H-%M-%S")}.xlsx', index=False)

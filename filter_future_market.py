@@ -1,28 +1,23 @@
 import pandas as pd
 from spot_market import *
 from datetime import datetime, timedelta
-
+import pytz
 
 def common_markets_filtering(spot_usdt_tradable_markets, future_ticker_list):
     future_set = set()
     for i in future_ticker_list:
         future_set.add(i['contract'])
-    print(f'total future_set: {len(future_set)}')
 
     spot_set = set()
     for i in spot_usdt_tradable_markets:
         spot_set.add(i['id'])
-    print(f'total spot_set: {len(spot_set)}')
 
     common_market = future_set.intersection(spot_set)
-    print(f"Total Common Markets for spot and futures: {len(common_market)}")
     remove_unmatched_markets = future_set - spot_set
-    print("removed Unmatched markets:", len(remove_unmatched_markets))
 
     for i in future_ticker_list:
         if i['contract'] in list(remove_unmatched_markets):
             future_ticker_list.remove(i)
-    print(f'total future_ticker_list after removal: {len(future_ticker_list)}')
     return future_ticker_list
 
 
@@ -39,12 +34,10 @@ def features_selection(future_ticker_list):
 
     # removed crypto which price is more than $5
     selected_df = selected_df[selected_df['mark_price'] < 5].sort_values(by='volume_24h_quote')
-    print(f"total makets (removed future markets- Price > $5): {len(selected_df)}")
     # removed crypto which 24 hrs volume is less than 300k
 
     selected_df = selected_df[selected_df['volume_24h_quote'] > 350000].sort_values(by='volume_24h_quote',
                                                                                     ascending=False)
-    print(f'total markets (removed future markets- volume < 350k): {len(selected_df)}')
     selected_df = selected_df.reset_index()
 
     selected_df = selected_df.drop('index', axis=1)
@@ -55,9 +48,19 @@ def features_selection(future_ticker_list):
 
 
 def candlestick_data_handle7d(contract):
-    query_param = {'contract': f'{contract}', 'interval': '1d',
-                   "from": int((datetime.now() - timedelta(days=7)).timestamp()),
-                   "to": int(datetime.now().timestamp())}
+    ist_timezone = pytz.timezone('Asia/Kolkata')
+    ist_now = datetime.now(ist_timezone)
+    from_timestamp = int((ist_now - timedelta(days=7)).timestamp())
+    to_timestamp = int(ist_now.timestamp())
+    query_param = {
+        'contract': contract,
+        'interval': '1d',
+        'from': from_timestamp,
+        'to': to_timestamp
+    }
+    # query_param = {'contract': f'{contract}', 'interval': '1d',
+    #                "from": int((datetime.now() - timedelta(days=7)).timestamp()),
+    #                "to": int(datetime.now().timestamp())}
 
     future_candlestick_data7d = requests.request('GET', host + prefix + future_candlestick_url, params=query_param,
                                                  headers=headers).json()
@@ -83,9 +86,19 @@ In this fun, will exclude assets which may have high/low ask/bid price differenc
 
 
 def candlestick_data_handleofmin(contract, interval, start_min):
-    query_param = {'contract': f'{contract}', 'interval': interval,
-                   "from": int((datetime.now() - timedelta(minutes=start_min)).timestamp()),
-                   "to": int((datetime.now() - timedelta(minutes=1)).timestamp())}
+    ist_timezone = pytz.timezone('Asia/Kolkata')
+    ist_now = datetime.now(ist_timezone)
+    from_timestamp = int((ist_now - timedelta(minutes=start_min)).timestamp())
+    to_timestamp = int((ist_now - timedelta(minutes=1)).timestamp())
+    query_param = {
+        'contract': contract,
+        'interval': interval,
+        'from': from_timestamp,
+        'to': to_timestamp
+    }
+    # query_param = {'contract': f'{contract}', 'interval': interval,
+    #                "from": int((datetime.now() - timedelta(minutes=start_min)).timestamp()),
+    #                "to": int((datetime.now() - timedelta(minutes=1)).timestamp())}
 
     future_candlestick_data_of_m = requests.request('GET', host + prefix + future_candlestick_url, params=query_param,
                                                     headers=headers).json()
@@ -105,6 +118,3 @@ def candlestick_data_handleofmin(contract, interval, start_min):
         return (future_candlestick_data_of_m['sum'] < 1000).any()
 
 
-# if __name__ == '__main__':
-#     print('working')
-#     print(candlestick_data_handleofmin('BAIDOGE_USDT', '1m', 6))
