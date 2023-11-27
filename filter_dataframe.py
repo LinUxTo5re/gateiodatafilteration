@@ -1,5 +1,6 @@
 from shared_data import crypto_price_change_url
 import requests
+from numpy import nan
 
 
 def filter_coins(contract):
@@ -8,5 +9,8 @@ def filter_coins(contract):
 
     if response.status_code == 200:
         if abs(float(response.json()['percentChange'])) > 2:
-            return float(response.json()['percentChange'])
-
+            return abs(float(response.json()['percentChange']))
+        else:
+            return nan
+    else:
+        return nan

@@ -3,6 +3,7 @@ from spot_market import *
 from datetime import datetime, timedelta
 import pytz
 
+
 def common_markets_filtering(spot_usdt_tradable_markets, future_ticker_list):
     future_set = set()
     for i in future_ticker_list:
@@ -52,15 +53,13 @@ def candlestick_data_handle7d(contract):
     ist_now = datetime.now(ist_timezone)
     from_timestamp = int((ist_now - timedelta(days=7)).timestamp())
     to_timestamp = int(ist_now.timestamp())
+
     query_param = {
         'contract': contract,
         'interval': '1d',
         'from': from_timestamp,
         'to': to_timestamp
     }
-    # query_param = {'contract': f'{contract}', 'interval': '1d',
-    #                "from": int((datetime.now() - timedelta(days=7)).timestamp()),
-    #                "to": int(datetime.now().timestamp())}
 
     future_candlestick_data7d = requests.request('GET', host + prefix + future_candlestick_url, params=query_param,
                                                  headers=headers).json()
@@ -90,15 +89,13 @@ def candlestick_data_handleofmin(contract, interval, start_min):
     ist_now = datetime.now(ist_timezone)
     from_timestamp = int((ist_now - timedelta(minutes=start_min)).timestamp())
     to_timestamp = int((ist_now - timedelta(minutes=1)).timestamp())
+
     query_param = {
         'contract': contract,
         'interval': interval,
         'from': from_timestamp,
         'to': to_timestamp
     }
-    # query_param = {'contract': f'{contract}', 'interval': interval,
-    #                "from": int((datetime.now() - timedelta(minutes=start_min)).timestamp()),
-    #                "to": int((datetime.now() - timedelta(minutes=1)).timestamp())}
 
     future_candlestick_data_of_m = requests.request('GET', host + prefix + future_candlestick_url, params=query_param,
                                                     headers=headers).json()
@@ -116,5 +113,3 @@ def candlestick_data_handleofmin(contract, interval, start_min):
         return (future_candlestick_data_of_m['sum'] < 2500).any()
     else:
         return (future_candlestick_data_of_m['sum'] < 1000).any()
-
-

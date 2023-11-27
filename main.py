@@ -56,11 +56,17 @@ if __name__ == '__main__':
     selected_df = selected_df[selected_df['volume_24h_quote'] > 500000].sort_values(by='volume_24h_quote',
                                                                                     ascending=False)
     try:
-        for crypto in selected_df['contract']:
-            if not filter_dataframe.filter_coins(crypto):
-                selected_df = selected_df[selected_df['contract'] != crypto]
+        for index, contract in selected_df['contract'].items():
+            selected_df.at[index, 'change_pct'] = filter_dataframe.filter_coins(contract)
+        selected_df.dropna(subset=['change_pct'], inplace=True)
 
-        selected_df = selected_df.sort_values(by='volume_24h_quote', ascending=False)
+        selected_df = selected_df.reset_index()
+
+        if len(selected_df) > 5:
+            selected_df = selected_df.sort_values(by=['volume_24h_quote', 'change_pct'], ascending=[False, False])
+            selected_df = selected_df.head(6)
+        else:
+            selected_df = selected_df.sort_values(by='volume_24h_quote', ascending=False)
     except Exception as e:
         pass
     ist_timezone = pytz.timezone('Asia/Kolkata')
