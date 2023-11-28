@@ -29,10 +29,9 @@ def features_selection(future_ticker_list):
 
     for column in selected_df.columns:
         try:
-            selected_df[column] = selected_df[column].astype(float)
+            selected_df.loc[:, column] = selected_df[column].astype(float)
         except ValueError:
             pass
-
     # removed crypto which price is more than $5
     selected_df = selected_df[selected_df['mark_price'] < 5].sort_values(by='volume_24h_quote')
     # removed crypto which 24 hrs volume is less than 300k

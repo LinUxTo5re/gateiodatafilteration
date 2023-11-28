@@ -2,11 +2,9 @@ import spot_market
 import future_market
 import filter_future_market
 import filter_spot_market
-from datetime import datetime
-import os
-import glob
 import filter_dataframe
-import pytz
+from tqdm import tqdm
+
 # entry pt of my code
 if __name__ == '__main__':
     # list of available spot markets on gate io
@@ -37,7 +35,10 @@ if __name__ == '__main__':
     '''
     here we're performing deep filtering using contracts candlesticks data for 7d
     '''
-    for i in selected_df['contract']:
+    progress_bar_all = tqdm(selected_df['contract'], desc='Processing contracts', total=len(selected_df),
+                            colour='green')
+    for i in progress_bar_all:
+        progress_bar_all.set_postfix({'Processing': i})
         if filter_future_market.candlestick_data_handle7d(i):
             selected_df = selected_df[selected_df['contract'] != i]
         else:
@@ -47,29 +48,32 @@ if __name__ == '__main__':
                 if filter_future_market.candlestick_data_handleofmin(i, '3m', 6):
                     selected_df = selected_df[selected_df['contract'] != i]
 
-    # Check if there are any XLS files, then delete them
-    if glob.glob(os.path.join(os.getcwd(), '*.xlsx')):
-        for file in glob.glob(os.path.join(os.getcwd(), '*.xlsx')):
-            os.remove(file)
-
     # filtered coins with volume 500k or more
     selected_df = selected_df[selected_df['volume_24h_quote'] > 500000].sort_values(by='volume_24h_quote',
                                                                                     ascending=False)
+    selected_df = selected_df.reset_index()
+    selected_df = selected_df.drop('index', axis=1)
+
+    print("df before pct_change: \n", selected_df)
+
     try:
-        for index, contract in selected_df['contract'].items():
+        progress_bar_sort = tqdm(selected_df['contract'].items(), desc='Processing contracts', total=len(selected_df),
+                            colour='green')
+        for index, contract in progress_bar_sort:
             selected_df.at[index, 'change_pct'] = filter_dataframe.filter_coins(contract)
+            progress_bar_sort.set_postfix({'Processing': contract})
+
         selected_df.dropna(subset=['change_pct'], inplace=True)
 
         selected_df = selected_df.reset_index()
-
+        print('df before sorting top 5: \n', selected_df)
         if len(selected_df) > 5:
             selected_df = selected_df.sort_values(by=['volume_24h_quote', 'change_pct'], ascending=[False, False])
-            selected_df = selected_df.head(6)
+            selected_df = selected_df.head(5)
         else:
             selected_df = selected_df.sort_values(by='volume_24h_quote', ascending=False)
+        selected_df = selected_df.drop('index', axis=1)
     except Exception as e:
         pass
-    ist_timezone = pytz.timezone('Asia/Kolkata')
-    ist_now = datetime.now(ist_timezone)
-    # Saving XLSX file
-    selected_df.to_excel(f'final_spot_futures_markets_{ist_now.strftime("%Y-%m-%d_%H-%M-%S")}.xlsx', index=False)
+
+    print("df after pct_change: \n", selected_df)
