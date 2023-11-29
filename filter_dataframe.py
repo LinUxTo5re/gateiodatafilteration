@@ -8,8 +8,8 @@ def filter_coins(contract):
     response = requests.get(api_url)
 
     if response.status_code == 200:
-        if float(response.json()['percentChange']) > 2 or float(response.json()['percentChange']) < -2:
-            return float(response.json()['percentChange'])
+        if abs(float(response.json()['percentChange'])) > 2:
+            return abs(float(response.json()['percentChange']))
         else:
             return nan
     else:

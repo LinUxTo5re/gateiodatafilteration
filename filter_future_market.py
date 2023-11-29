@@ -25,13 +25,15 @@ def common_markets_filtering(spot_usdt_tradable_markets, future_ticker_list):
 def features_selection(future_ticker_list):
     df = pd.DataFrame(future_ticker_list)
     selected_columns = ['contract', 'mark_price', 'volume_24h_quote']
-    selected_df = df[selected_columns]
+    selected_df = df[selected_columns].copy()
 
     for column in selected_df.columns:
-        try:
-            selected_df.loc[:, column] = selected_df[column].astype(float)
-        except ValueError:
-            pass
+        if column != 'contract':
+            try:
+                selected_df.loc[:, column] = selected_df[column].astype(float)
+            except ValueError:
+                pass
+
     # removed crypto which price is more than $5
     selected_df = selected_df[selected_df['mark_price'] < 5].sort_values(by='volume_24h_quote')
     # removed crypto which 24 hrs volume is less than 300k
