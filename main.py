@@ -55,7 +55,7 @@ if __name__ == '__main__':
     selected_df = selected_df.reset_index()
     selected_df = selected_df.drop('index', axis=1)
 
-    print("\033[30m" + "=" * 30)
+    print("\033[97m" + "=" * 60)
     try:
         progress_bar_sort = tqdm(selected_df['contract'].items(), desc='Processing contracts', total=len(selected_df),
                                  colour='green')
@@ -70,11 +70,11 @@ if __name__ == '__main__':
             selected_columns = ['contract', 'mark_price', 'volume_24h_quote', 'change_pct']
             sorted_by_volume = selected_df[selected_columns].sort_values(by=['volume_24h_quote'], ascending=[False]).head(5).copy()
             sorted_by_pct_change = selected_df[selected_columns].sort_values(by=['change_pct'], ascending=[False]).head(5).copy()
-            print("\033[91m" + "=" * 30)
+            print("\033[91m" + "=" * 60)
             print(f"sorted by volume: \n {sorted_by_volume}")
-            print("\033[92m" + "=" * 30)
+            print("\033[92m" + "=" * 60)
             print(f"sorted by pct_change: \n {sorted_by_pct_change}")
-            print("\033[30m" + "=" * 30)
+            print("\033[95m" + "=" * 60)
             print(f"common df: \n {pd.merge(sorted_by_volume, sorted_by_pct_change, on=['contract', 'mark_price', 'volume_24h_quote', 'change_pct'], how='inner')}")
         else:
             selected_df = selected_df.sort_values(by='volume_24h_quote', ascending=False)
