@@ -6,8 +6,8 @@ import filter_spot_market
 import filter_dataframe
 from tqdm import tqdm
 
-# entry pt of my code
-if __name__ == '__main__':
+
+def run_my_code():
     # list of available spot markets on gate io
     spot_markets_list = spot_market.spot_markets_list()
 
@@ -55,7 +55,7 @@ if __name__ == '__main__':
     selected_df = selected_df.reset_index()
     selected_df = selected_df.drop('index', axis=1)
 
-    print("\033[97m" + "=" * 60)
+    print("\033[97m" + "=" * 90)
     try:
         progress_bar_sort = tqdm(selected_df['contract'].items(), desc='Processing contracts', total=len(selected_df),
                                  colour='green')
@@ -68,14 +68,17 @@ if __name__ == '__main__':
         selected_df = selected_df.reset_index()
         if len(selected_df) > 5:
             selected_columns = ['contract', 'mark_price', 'volume_24h_quote', 'change_pct']
-            sorted_by_volume = selected_df[selected_columns].sort_values(by=['volume_24h_quote'], ascending=[False]).head(5).copy()
-            sorted_by_pct_change = selected_df[selected_columns].sort_values(by=['change_pct'], ascending=[False]).head(5).copy()
-            print("\033[91m" + "=" * 60)
+            sorted_by_volume = selected_df[selected_columns].sort_values(by=['volume_24h_quote'],
+                                                                         ascending=[False]).head(5).copy()
+            sorted_by_pct_change = selected_df[selected_columns].sort_values(by=['change_pct'], ascending=[False]).head(
+                5).copy()
+            print("\033[91m" + "=" * 90)
             print(f"sorted by volume: \n {sorted_by_volume}")
-            print("\033[92m" + "=" * 60)
+            print("\033[92m" + "=" * 90)
             print(f"sorted by pct_change: \n {sorted_by_pct_change}")
-            print("\033[95m" + "=" * 60)
-            print(f"common df: \n {pd.merge(sorted_by_volume, sorted_by_pct_change, on=['contract', 'mark_price', 'volume_24h_quote', 'change_pct'], how='inner')}")
+            print("\033[95m" + "=" * 90)
+            print(
+                f"common df: \n {pd.merge(sorted_by_volume, sorted_by_pct_change, on=['contract', 'mark_price', 'volume_24h_quote', 'change_pct'], how='inner')}")
         else:
             selected_df = selected_df.sort_values(by='volume_24h_quote', ascending=False)
     except Exception as e:
