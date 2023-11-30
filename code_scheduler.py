@@ -22,32 +22,40 @@ def schedule_tasks():
     global next_scheduled_time
     ist_now = datetime.now(IST)
     current_time = ist_now.strftime("%H:%M:%S")
+    is_next_day = False
 
     if check_connectivity():
         if "08:30:00" < current_time < "08:45:00":  # morning 8
             scheduled_time = "08:50:00"
-            next_scheduled_time = (datetime.strptime("11:30:00", "%H:%M:%S") - datetime.strptime("08:30:00", "%H:%M:%S")).total_seconds() / 60
+            next_scheduled_time = (datetime.strptime("11:30:00", "%H:%M:%S") - datetime.strptime("08:30:00",
+                                                                                                 "%H:%M:%S")).total_seconds() / 60
         elif "11:30:00" < current_time < "11:45:00":  # morning 11
             scheduled_time = "15:50:00"
-            next_scheduled_time = (datetime.strptime("15:30:00", "%H:%M:%S") - datetime.strptime("11:30:00", "%H:%M:%S")).total_seconds() / 60
+            next_scheduled_time = (datetime.strptime("15:30:00", "%H:%M:%S") - datetime.strptime("11:30:00",
+                                                                                                 "%H:%M:%S")).total_seconds() / 60
         elif "15:30:00" < current_time < "15:45:00":  # afternoon 3
             scheduled_time = "15:50:00"
-            next_scheduled_time = (datetime.strptime("20:30:00", "%H:%M:%S") - datetime.strptime("15:30:00", "%H:%M:%S")).total_seconds() / 60
+            next_scheduled_time = (datetime.strptime("20:30:00", "%H:%M:%S") - datetime.strptime("15:30:00",
+                                                                                                 "%H:%M:%S")).total_seconds() / 60
         elif "20:30:00" < current_time < "20:45:00":  # night 8
             scheduled_time = "20:50:00"
-            next_scheduled_time = 30
-        else:
-            scheduled_time = "08:50:00"
+            next_scheduled_time = (datetime.strptime("21:30:00", "%H:%M:%S") - datetime.strptime("20:30:00",
+                                                                                                 "%H:%M:%S")).total_seconds() / 60
+        elif "20:50:00" < current_time:
+            scheduled_time = "08:35:00"
+            ist_now = datetime.now(IST)
+            current_time = ist_now.strftime("%H:%M:%S")
             scheduled_date_time = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d') + f" {scheduled_time}"
-            next_scheduled_time = 690
+            next_scheduled_time = abs((datetime.strptime(scheduled_time, "%H:%M:%S") - datetime.strptime(current_time,
+                                                                                                         "%H:%M:%S")).total_seconds() / 60)
             is_next_day = True
-
+        else:
+            return False
         if not is_next_day:
             scheduled_date_time = f"{ist_now.strftime('%Y-%m-%d')} {scheduled_time}"
         s.enterabs(time.mktime(time.strptime(scheduled_date_time, "%Y-%m-%d %H:%M:%S")), 1, run_my_code, ())
         return True
     else:
-        print("No network connectivity. Task not scheduled.")
         return False
 
 
@@ -62,5 +70,5 @@ while True:
     now = datetime.now(IST)
     next_minute = now.replace(second=0, microsecond=0) + timedelta(minutes=next_scheduled_time + 5)
     time_remaining = (next_minute - now).total_seconds()
+    print(f"\nSleep Mode: {time_remaining} seconds")
     time.sleep(time_remaining)
-
