@@ -83,3 +83,9 @@ def run_my_code():
             selected_df = selected_df.sort_values(by='volume_24h_quote', ascending=False)
     except Exception as e:
         pass
+
+
+# block to execute code manually
+
+if __name__ == "__main__":
+    run_my_code()
