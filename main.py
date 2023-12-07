@@ -54,6 +54,7 @@ def run_my_code():
                                                                                     ascending=False)
     selected_df = selected_df.reset_index()
     selected_df = selected_df.drop('index', axis=1)
+    selected_df_bak = selected_df.copy()
 
     print("\033[97m" + "=" * 87)
     try:
@@ -80,7 +81,8 @@ def run_my_code():
             print(
                 f"common df: \n {pd.merge(sorted_by_volume, sorted_by_pct_change, on=['contract', 'mark_price', 'volume_24h_quote', 'change_pct'], how='inner')}")
         else:
-            selected_df = selected_df.sort_values(by='volume_24h_quote', ascending=False)
+            print("\033[92m" + "=||=" * 25)
+            print(f"{selected_df_bak.sort_values(by='volume_24h_quote', ascending=False).head(10)}")
     except Exception as e:
         pass
 
