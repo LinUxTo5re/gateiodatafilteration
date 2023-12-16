@@ -61,18 +61,25 @@ def run_my_code():
         progress_bar_sort = tqdm(selected_df['contract'].items(), desc='Processing contracts', total=len(selected_df),
                                  colour='green')
         for index, contract in progress_bar_sort:
-            selected_df.at[index, 'change_pct'] = filter_dataframe.filter_coins(contract)
-            progress_bar_sort.set_postfix({'Processing': contract})
+            try:
+                selected_df.at[index, 'no_change_pct_sign'], selected_df.at[
+                    index, 'change_pct'] = filter_dataframe.filter_coins(contract)
+                progress_bar_sort.set_postfix({'Processing': contract})
+            except Exception as e:
+                pass
 
-        selected_df.dropna(subset=['change_pct'], inplace=True)
+        selected_df.dropna(subset=['no_change_pct_sign'], inplace=True)  # drop row if contain NaN in any column
 
         selected_df = selected_df.reset_index()
         if len(selected_df) > 5:
-            selected_columns = ['contract', 'mark_price', 'volume_24h_quote', 'change_pct']
+            selected_columns = ['contract', 'mark_price', 'volume_24h_quote', 'change_pct', 'no_change_pct_sign']
             sorted_by_volume = selected_df[selected_columns].sort_values(by=['volume_24h_quote'],
                                                                          ascending=[False]).head(5).copy()
-            sorted_by_pct_change = selected_df[selected_columns].sort_values(by=['change_pct'], ascending=[False]).head(
+            sorted_by_pct_change = selected_df[selected_columns].sort_values(by=['no_change_pct_sign'],
+                                                                             ascending=[False]).head(
                 5).copy()
+            sorted_by_pct_change.drop('no_change_pct_sign', axis=1, inplace=True)
+            sorted_by_volume.drop('no_change_pct_sign', axis=1, inplace=True)
             print("\033[91m" + "=" * 87)
             print(f"sorted by volume: \n {sorted_by_volume}")
             print("\033[92m" + "=" * 87)
