@@ -36,3 +36,7 @@ Filtering high volume markets to focus on significant trading activities.
 ```bash
 python3 main.py
 ```
+
+### Output
+
+![WhatsApp Image 2023-12-23 at 20 08 56](https://github.com/LinUxTo5re/gateiodatafilteration/assets/90641894/76436d99-9b8c-4afe-be75-398fc380118e)
