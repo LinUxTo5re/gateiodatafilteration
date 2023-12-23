@@ -17,6 +17,19 @@ Filtering high volume markets to focus on significant trading activities.
 - Requests (for API interaction)
 - Pandas (for data manipulation and analysis)
 - Gate IO API's
+## Installation
+
+1. Clone the repository:
+
+    ```bash
+    git clone https://github.com/LinUxTo5re/gateiodatafilteration.git
+    ```
+
+2. Install dependencies:
+
+    ```bash
+    pip install -r requirements.txt
+    ```
 
 ### Run the CLI application:
 
