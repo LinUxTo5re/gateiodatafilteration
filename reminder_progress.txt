@@ -1,3 +1,14 @@
+calling specific function with N no. of arguments:
+python file.py function_name arg1 arg2 arg3 ...
+
+arguments:
+pct_change, top
+top - by volume (no. of assets)
+pct_change - top crypto by volume, with percentage change or not.
+pct_change: 0-False, 1-True
+example:
+python3 main.py run_my_code 1 15
+python3 main.py run_my_code 0 20
 
 ----------completed---------------------
 #some coins have a less numb of trades, so just get a 1min tf for those coins and filter those coins
