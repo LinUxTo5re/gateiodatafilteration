@@ -17,3 +17,9 @@ Filtering high volume markets to focus on significant trading activities.
 - Requests (for API interaction)
 - Pandas (for data manipulation and analysis)
 - Gate IO API's
+
+### Run the CLI application:
+
+```bash
+python3 main.py
+```
