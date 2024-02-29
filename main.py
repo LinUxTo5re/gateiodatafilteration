@@ -66,7 +66,7 @@ def run_my_code():
                     index, 'change_pct'] = filter_dataframe.filter_coins(contract)
                 progress_bar_sort.set_postfix({'Processing': contract})
             except Exception as e:
-                pass
+                print(f"\n {e}")
 
         selected_df.dropna(subset=['no_change_pct_sign'], inplace=True)  # drop row if contain NaN in any column
 
@@ -91,7 +91,7 @@ def run_my_code():
             print("\033[92m" + "=||=" * 25)
             print(f"{selected_df_bak.sort_values(by='volume_24h_quote', ascending=False).head(10)}")
     except Exception as e:
-        pass
+        print(f"\n {e}")
 
 
 # block to execute code manually
