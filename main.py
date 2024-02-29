@@ -65,7 +65,7 @@ def run_my_code(pct_change, top):
                     index, 'change_pct'] = filter_dataframe.filter_coins(contract)
                 progress_bar_sort.set_postfix({'Processing': contract})
             except Exception as e:
-                pass
+                print(f'\n{e}')
         selected_df.dropna(subset=['no_change_pct_sign'], inplace=True)  # drop row if contain NaN in any column
         selected_df = selected_df.reset_index()
         if len(selected_df) > 5 and top == 0:
@@ -107,7 +107,7 @@ if __name__ == "__main__":
                 arg2 = int(sys.argv[3])
                 run_my_code(arg1, arg2)
             else:
-                print("Insufficient arguments for run_my_code function, required: ")
+                print("Insufficient arguments for run_my_code function, required: pct_change, top")
         # For future reference
         # elif function_name == 'another_function':
         #     if len(sys.argv) > 3:

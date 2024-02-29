@@ -32,7 +32,7 @@ def features_selection(future_ticker_list):
             try:
                 selected_df.loc[:, column] = selected_df[column].astype(float)
             except ValueError:
-                pass
+                print("\n ValueError in features_selection()")
 
     # removed crypto which price is more than $5
     selected_df = selected_df[selected_df['mark_price'] < 5].sort_values(by='volume_24h_quote')
@@ -71,7 +71,7 @@ def candlestick_data_handle7d(contract):
         try:
             future_candlestick_data7d[column] = future_candlestick_data7d[column].astype(float)
         except ValueError:
-            pass
+            print("\n ValueError in candlestick_data_handle7d()")
 
     # 100000 is equal to 1.00e+05 (scientific notation)
     return (future_candlestick_data7d['sum'] < 350000).any()
@@ -108,7 +108,7 @@ def candlestick_data_handleofmin(contract, interval, start_min):
         try:
             future_candlestick_data_of_m[column] = future_candlestick_data_of_m[column].astype(float)
         except ValueError:
-            pass
+            print("\n ValueError in candlestick_data_handleofmin()")
     # sum - trading volume for that tf
     if interval == '5m':
         return (future_candlestick_data_of_m['sum'] < 2500).any()
