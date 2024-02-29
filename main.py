@@ -6,6 +6,7 @@ import filter_spot_market
 import filter_dataframe
 from tqdm import tqdm
 import sys
+from shared_data import top_markets_default
 
 
 def run_my_code(pct_change, top):
@@ -71,10 +72,10 @@ def run_my_code(pct_change, top):
         if len(selected_df) > 5 and top == 0:
             selected_columns = ['contract', 'mark_price', 'volume_24h_quote', 'change_pct', 'no_change_pct_sign']
             sorted_by_volume = selected_df[selected_columns].sort_values(by=['volume_24h_quote'],
-                                                                         ascending=[False]).head(5).copy()
+                                                                         ascending=[False]).head(top_markets_default).copy()
             sorted_by_pct_change = selected_df[selected_columns].sort_values(by=['no_change_pct_sign'],
                                                                              ascending=[False]).head(
-                5).copy()
+                top_markets_default).copy()
             sorted_by_pct_change.drop('no_change_pct_sign', axis=1, inplace=True)
             sorted_by_volume.drop('no_change_pct_sign', axis=1, inplace=True)
             print("\033[91m" + "=" * 87)

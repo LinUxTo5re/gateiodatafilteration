@@ -35,11 +35,10 @@ def features_selection(future_ticker_list):
                 print("\n ValueError in features_selection()")
 
     # removed crypto which price is more than $5
-    selected_df = selected_df[selected_df['mark_price'] < 5].sort_values(by='volume_24h_quote')
-    # removed crypto which 24 hrs volume is less than 300k
-
-    selected_df = selected_df[selected_df['volume_24h_quote'] > 350000].sort_values(by='volume_24h_quote',
-                                                                                    ascending=False)
+    selected_df = selected_df[selected_df['mark_price'] < usdt_price_filter].sort_values(by='volume_24h_quote')
+    # removed crypto which 24 hrs volume is less than 350k
+    selected_df = selected_df[selected_df['volume_24h_quote'] > hrs_24_volume].sort_values(by='volume_24h_quote',
+                                                                                           ascending=False)
     selected_df = selected_df.reset_index()
 
     selected_df = selected_df.drop('index', axis=1)
@@ -74,7 +73,7 @@ def candlestick_data_handle7d(contract):
             print("\n ValueError in candlestick_data_handle7d()")
 
     # 100000 is equal to 1.00e+05 (scientific notation)
-    return (future_candlestick_data7d['sum'] < 350000).any()
+    return (future_candlestick_data7d['sum'] < days_7_volume).any()
 
 
 """
@@ -111,6 +110,6 @@ def candlestick_data_handleofmin(contract, interval, start_min):
             print("\n ValueError in candlestick_data_handleofmin()")
     # sum - trading volume for that tf
     if interval == '5m':
-        return (future_candlestick_data_of_m['sum'] < 2500).any()
+        return (future_candlestick_data_of_m['sum'] < min_5_volume).any()
     else:
-        return (future_candlestick_data_of_m['sum'] < 1000).any()
+        return (future_candlestick_data_of_m['sum'] < min_1_volume).any()
